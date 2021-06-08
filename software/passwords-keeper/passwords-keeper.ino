@@ -13,12 +13,12 @@ void ProcessAction(Input::Action action)
     switch(action)
     {
         case Input::ACTION_TURN_ON:
-            digitalWrite(1, HIGH);
+            //digitalWrite(1, HIGH);
             Output::PrintMessage(FPSTR(msgTurnOn));
             break;
 
         case Input::ACTION_TURN_OFF:
-            digitalWrite(1, LOW);
+            //digitalWrite(1, LOW);
             Output::PrintMessage(FPSTR(msgTurnOff));
             break;
 

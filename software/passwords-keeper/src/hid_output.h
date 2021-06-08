@@ -13,11 +13,11 @@ namespace Output
         Keyboard::SendKeyStroke(0);
 #if 0
         Keyboard::SendKeyStroke(KEY_END);
-        Keyboard::SendKeyStroke(KEY_HOME, MOD_SHIFT_LEFT);
+        Keyboard::SendKeyStroke(KEY_HOME, KEY_MOD_LSHIFT);
         Keyboard::SendKeyStroke(KEY_DELETE);
 #else
         Keyboard::SendKeyStroke(KEY_HOME);
-        Keyboard::SendKeyStroke(KEY_END, MOD_SHIFT_LEFT);
+        Keyboard::SendKeyStroke(KEY_END, KEY_MOD_LSHIFT);
         Keyboard::SendKeyStroke(KEY_BACKSPACE);
 #endif
     }

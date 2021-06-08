@@ -11,8 +11,6 @@ namespace Input
         ACTION_SUBMIT
     };
 
-    typedef unsigned long Time;
-
     bool isTurnedOn;
     bool isPendingSubmit;
     Time pendingSubmitTime;
@@ -22,6 +20,13 @@ namespace Input
 void ProcessAction(Input::Action action);
 
 /* Handlers for PC's control keys */
+void PowerOn()
+{
+    Keyboard::SendKeyStroke(KEY_NONE);
+    if (Keyboard::IsKeyLedOn(LED_SCROLL_LOCK)) Keyboard::SendKeyStroke(KEY_SCROLLLOCK);
+    if (Keyboard::IsKeyLedOn(LED_CAPS_LOCK)) Keyboard::SendKeyStroke(KEY_CAPSLOCK);
+}
+
 void NumLockToggle(bool isOn)
 {
     // do nothing
@@ -65,7 +70,7 @@ namespace Input
             if (isPendingSubmit)
             {
                 Time nowTime = millis();
-                if (nowTime - pendingSubmitTime >= 3000)
+                if (nowTime - pendingSubmitTime >= 2000)
                 {
                     isPendingSubmit = false;
                     ProcessAction(Input::ACTION_SUBMIT);

@@ -8,6 +8,7 @@
 #include "hid_defines.h"
 
 typedef unsigned char Byte;
+typedef unsigned long Time;
 
 /* PC's keyboard LED bits */
 #define LED_NUM_LOCK       0x01
@@ -15,6 +16,7 @@ typedef unsigned char Byte;
 #define LED_SCROLL_LOCK    0x04
 
 /* Forward declarations */
+void PowerOn();
 void NumLockToggle(bool isOn);
 void CapsLockToggle(bool isOn);
 void ScrollLockToggle(bool isOn);
@@ -110,7 +112,11 @@ usbMsgLen_t usbFunctionWrite(Byte *data, Byte len)
         bool isPowerOn = (Keyboard::ledState == 0xFF);
         Keyboard::ledState = data[0];
 
-        if (!isPowerOn)
+        if (isPowerOn)
+        {
+            PowerOn();
+        }
+        else
         {
             if (ledChanges & LED_NUM_LOCK)
                 NumLockToggle(Keyboard::ledState & LED_NUM_LOCK);
@@ -151,6 +157,19 @@ namespace Keyboard
         usbPoll();
     }
 
+    // delay while updating until we are finished delaying
+    void Delay(long ms) 
+    {
+        Time last = millis();
+        while (ms > 0) 
+        {
+            Time now = millis();
+            ms -= now - last;
+            last = now;
+            Update();
+        }
+    }
+
     // Sends a key press only, with modifiers - no release
     // To release the key, send again with keyPress = 0
     void SendKeyPress(Byte keyPress, Byte modifiers)
@@ -181,9 +200,16 @@ namespace Keyboard
         SendKeyStroke(keyStroke, 0);
     }
 
+    // Read LED status
+    bool IsKeyLedOn(Byte keyLedMask)
+    {
+        return (Keyboard::ledState & keyLedMask);
+    }
+
     // Convert character to modifier + keycode
     void CharToKey(Byte ch, Byte& keycode, Byte& modifier)
     {
+        bool isCapsLock = IsKeyLedOn(LED_CAPS_LOCK);
         if (ch >= '0' && ch <= '9')
         {
             modifier = 0;
@@ -191,12 +217,12 @@ namespace Keyboard
         }
         else if (ch >= 'a' && ch <= 'z')
         {
-            modifier = (Keyboard::ledState & LED_CAPS_LOCK) ? MOD_SHIFT_LEFT : 0;
+            modifier = isCapsLock ? KEY_MOD_LSHIFT : 0;
             keycode  = 4 + (ch - 'a');
         }
         else if (ch >= 'A' && ch <= 'Z')
         {
-            modifier = (Keyboard::ledState & LED_CAPS_LOCK) ? 0 : MOD_SHIFT_LEFT;
+            modifier = isCapsLock ? 0 : KEY_MOD_LSHIFT;
             keycode  = 4 + (ch - 'A');
         }
         else
@@ -209,7 +235,7 @@ namespace Keyboard
                 keycode = 0x37;
                 break;
             case '_':
-                modifier = MOD_SHIFT_LEFT;
+                modifier = KEY_MOD_LSHIFT;
             case '-':
                 keycode = 0x2D;
                 break;
