@@ -8,18 +8,16 @@ class __FlashStringHelper;
 
 namespace Output
 {
-    void Clear()
+    Time ledSwitchTime;
+    bool isLedBlinking;
+    bool isLedOn;
+
+    void PrintClear()
     {
-        Keyboard::SendKeyStroke(0);
-#if 0
-        Keyboard::SendKeyStroke(KEY_END);
-        Keyboard::SendKeyStroke(KEY_HOME, KEY_MOD_LSHIFT);
-        Keyboard::SendKeyStroke(KEY_DELETE);
-#else
+        Keyboard::SendKeyStroke(KEY_NONE);
         Keyboard::SendKeyStroke(KEY_HOME);
         Keyboard::SendKeyStroke(KEY_END, KEY_MOD_LSHIFT);
         Keyboard::SendKeyStroke(KEY_BACKSPACE);
-#endif
     }
 
     void PrintChar(char ch)
@@ -37,7 +35,46 @@ namespace Output
 
     void PrintMessage(const __FlashStringHelper* str)
     {
-        Clear();
+        PrintClear();
         PrintText(str);
+    }
+
+    void LedOn()
+    {
+        isLedBlinking = false;
+        isLedOn = true;
+    }
+
+    void LedOff()
+    {
+        isLedBlinking = false;
+        isLedOn = false;
+    }
+
+    void LedBlinking()
+    {
+        isLedBlinking = true;
+        ledSwitchTime = millis();
+    }
+
+     void Init()
+    {
+        pinMode(1, OUTPUT);
+        LedOff();
+    }
+
+    void Update()
+    {
+        if (isLedBlinking)
+        {
+            Time nowTime = millis();
+            if (nowTime - ledSwitchTime >= 1000)
+            {
+                ledSwitchTime = nowTime;
+                isLedOn = !isLedOn;
+            }
+        }
+
+        digitalWrite(1, isLedOn ? HIGH : LOW);
     }
 }

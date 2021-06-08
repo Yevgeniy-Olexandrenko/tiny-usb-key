@@ -13,12 +13,12 @@ void ProcessAction(Input::Action action)
     switch(action)
     {
         case Input::ACTION_TURN_ON:
-            //digitalWrite(1, HIGH);
+            Output::LedBlinking();
             Output::PrintMessage(FPSTR(msgTurnOn));
             break;
 
         case Input::ACTION_TURN_OFF:
-            //digitalWrite(1, LOW);
+            Output::LedOff();
             Output::PrintMessage(FPSTR(msgTurnOff));
             break;
 
@@ -35,16 +35,14 @@ void ProcessAction(Input::Action action)
 
 void setup()
 {
-    // Init onboard led
-    pinMode(1, OUTPUT);
-    digitalWrite(1, LOW);
-
     Keyboard::Init();
     Input::Init();
+    Output::Init();
 }
 
 void loop()
 {
     Keyboard::Update();
     Input::Update();
+    Output::Update();
 }
