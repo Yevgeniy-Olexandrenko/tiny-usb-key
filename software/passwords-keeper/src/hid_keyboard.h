@@ -3,7 +3,9 @@
 #include <avr/wdt.h>
 #include <avr/interrupt.h>
 #include <util/delay.h>
+
 #include "usbdrv/usbdrv.h"
+#include "hid_defines.h"
 
 typedef unsigned char Byte;
 
@@ -11,78 +13,6 @@ typedef unsigned char Byte;
 #define LED_NUM_LOCK       0x01
 #define LED_CAPS_LOCK      0x02
 #define LED_SCROLL_LOCK    0x04
-
-/* Key modificatos declaration */
-#define MOD_CONTROL_LEFT   (1<<0)
-#define MOD_SHIFT_LEFT     (1<<1)
-#define MOD_ALT_LEFT       (1<<2)
-#define MOD_GUI_LEFT       (1<<3)
-#define MOD_CONTROL_RIGHT  (1<<4)
-#define MOD_SHIFT_RIGHT    (1<<5)
-#define MOD_ALT_RIGHT      (1<<6)
-#define MOD_GUI_RIGHT      (1<<7)
-
-
-/* Keyboard usage values, see usb.org's HID-usage-tables document, */
-/* chapter 10 Keyboard/Keypad Page for more codes. */
-#define KEY_A          4
-#define KEY_B          5
-#define KEY_C          6
-#define KEY_D          7
-#define KEY_E          8
-#define KEY_F          9
-#define KEY_G          10
-#define KEY_H          11
-#define KEY_I          12
-#define KEY_J          13
-#define KEY_K          14
-#define KEY_L          15
-#define KEY_M          16
-#define KEY_N          17
-#define KEY_O          18
-#define KEY_P          19
-#define KEY_Q          20
-#define KEY_R          21
-#define KEY_S          22
-#define KEY_T          23
-#define KEY_U          24
-#define KEY_V          25
-#define KEY_W          26
-#define KEY_X          27
-#define KEY_Y          28
-#define KEY_Z          29
-#define KEY_1          30
-#define KEY_2          31
-#define KEY_3          32
-#define KEY_4          33
-#define KEY_5          34
-#define KEY_6          35
-#define KEY_7          36
-#define KEY_8          37
-#define KEY_9          38
-#define KEY_0          39
-#define KEY_ENTER      40
-#define KEY_BACKSPACE  42
-#define KEY_SPACE      44
-#define KEY_F1         58
-#define KEY_F2         59
-#define KEY_F3         60
-#define KEY_F4         61
-#define KEY_F5         62
-#define KEY_F6         63
-#define KEY_F7         64
-#define KEY_F8         65
-#define KEY_F9         66
-#define KEY_F10        67
-#define KEY_F11        68
-#define KEY_F12        69
-#define KEY_HOME       74
-#define KEY_DELETE     76
-#define KEY_END        77
-#define KEY_ARROW_R    79
-#define KEY_ARROW_L    80
-#define KEY_ARROW_D    81
-#define KEY_ARROW_U    82
 
 /* Forward declarations */
 void NumLockToggle(bool isOn);
@@ -249,5 +179,50 @@ namespace Keyboard
     void SendKeyStroke(byte keyStroke)
     {
         SendKeyStroke(keyStroke, 0);
+    }
+
+    // Convert character to modifier + keycode
+    void CharToKey(Byte ch, Byte& keycode, Byte& modifier)
+    {
+        if (ch >= '0' && ch <= '9')
+        {
+            modifier = 0;
+            keycode  = (ch == '0') ? 39 : 30 + (ch - '1');
+        }
+        else if (ch >= 'a' && ch <= 'z')
+        {
+            modifier = (Keyboard::ledState & LED_CAPS_LOCK) ? MOD_SHIFT_LEFT : 0;
+            keycode  = 4 + (ch - 'a');
+        }
+        else if (ch >= 'A' && ch <= 'Z')
+        {
+            modifier = (Keyboard::ledState & LED_CAPS_LOCK) ? 0 : MOD_SHIFT_LEFT;
+            keycode  = 4 + (ch - 'A');
+        }
+        else
+        {
+            modifier = 0;
+            keycode  = 0;
+            switch (ch)
+            {
+            case '.':
+                keycode = 0x37;
+                break;
+            case '_':
+                modifier = MOD_SHIFT_LEFT;
+            case '-':
+                keycode = 0x2D;
+                break;
+            case ' ':
+                keycode = 0x2C;
+                break;
+            case '\t':
+                keycode = 0x2B;
+                break;
+            case '\n':
+                keycode = 0x28;
+                break;
+            }
+        }
     }
 }

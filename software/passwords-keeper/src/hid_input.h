@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Controls
+namespace Input
 {
     enum Action
     {
@@ -19,38 +19,39 @@ namespace Controls
 }
 
 /* Forward declarations */
-void ProcessAction(Controls::Action action);
+void ProcessAction(Input::Action action);
 
 /* Handlers for PC's control keys */
 void NumLockToggle(bool isOn)
 {
+    // do nothing
 }
 
 void CapsLockToggle(bool isOn)
 {
-    if (Controls::isTurnedOn)
+    if (Input::isTurnedOn)
     {
-        Controls::isPendingSubmit = true;
-        Controls::pendingSubmitTime = millis();
+        Input::isPendingSubmit = true;
+        Input::pendingSubmitTime = millis();
 
-        ProcessAction(Controls::ACTION_NEXT);
+        ProcessAction(Input::ACTION_NEXT);
     }    
 }
 
 void ScrollLockToggle(bool isOn)
 {
-    if (isOn != Controls::isTurnedOn)
+    if (isOn != Input::isTurnedOn)
     {
-        Controls::isPendingSubmit = false;
+        Input::isPendingSubmit = false;
 
-        if (Controls::isTurnedOn = isOn)
-            ProcessAction(Controls::ACTION_TURN_ON);
+        if (Input::isTurnedOn = isOn)
+            ProcessAction(Input::ACTION_TURN_ON);
         else
-            ProcessAction(Controls::ACTION_TURN_OFF);
+            ProcessAction(Input::ACTION_TURN_OFF);
     }
 }
 
-namespace Controls
+namespace Input
 {
     void Init()
     {
@@ -67,7 +68,7 @@ namespace Controls
                 if (nowTime - pendingSubmitTime >= 3000)
                 {
                     isPendingSubmit = false;
-                    ProcessAction(Controls::ACTION_SUBMIT);
+                    ProcessAction(Input::ACTION_SUBMIT);
                 }
             }            
         }
