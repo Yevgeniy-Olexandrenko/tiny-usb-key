@@ -203,3 +203,138 @@
 #define KEY_MEDIA_COFFEE       0xf9
 #define KEY_MEDIA_REFRESH      0xfa
 #define KEY_MEDIA_CALC         0xfb
+
+/* ASCII character to keycode + shift mapping */
+#define SHIFT 0x80
+PROGMEM const uint8_t asciimap[128] =
+{
+  KEY_NONE,       // NUL
+  KEY_NONE,       // SOH
+  KEY_NONE,       // STX
+  KEY_NONE,       // ETX
+  KEY_NONE,       // EOT
+  KEY_NONE,       // ENQ
+  KEY_NONE,       // ACK
+  KEY_NONE,       // BEL
+  KEY_BACKSPACE,  // BS  Backspace
+  KEY_TAB,        // HT  Tab
+  KEY_ENTER,      // LF  Enter
+  KEY_NONE,       // VT
+  KEY_NONE,       // FF
+  KEY_NONE,       // CR
+  KEY_NONE,       // SO
+  KEY_NONE,       // SI
+  KEY_NONE,       // DLE
+  KEY_NONE,       // DC1
+  KEY_NONE,       // DC2
+  KEY_NONE,       // DC3
+  KEY_NONE,       // DC4
+  KEY_NONE,       // NAK
+  KEY_NONE,       // SYN
+  KEY_NONE,       // ETB
+  KEY_NONE,       // CAN
+  KEY_NONE,       // EM
+  KEY_NONE,       // SUB
+  KEY_NONE,       // ESC
+  KEY_NONE,       // FS
+  KEY_NONE,       // GS
+  KEY_NONE,       // RS
+  KEY_NONE,       // US
+
+  KEY_SPACE,       // ' '
+  0x1e|SHIFT, // !
+  0x34|SHIFT, // "
+  0x20|SHIFT, // #
+  0x21|SHIFT, // $
+  0x22|SHIFT, // %
+  0x24|SHIFT, // &
+  0x34,       // '
+  0x26|SHIFT, // (
+  0x27|SHIFT, // )
+  0x25|SHIFT, // *
+  0x2e|SHIFT, // +
+  0x36,       // ,
+  0x2d,       // -
+  0x37,       // .
+  0x38,       // /
+  KEY_0,       // 0
+  KEY_1,       // 1
+  KEY_2,       // 2
+  KEY_3,       // 3
+  KEY_4,       // 4
+  KEY_5,       // 5
+  KEY_6,       // 6
+  KEY_7,       // 7
+  KEY_8,       // 8
+  KEY_9,       // 9
+  0x33|SHIFT, // :
+  0x33,       // ;
+  0x36|SHIFT, // <
+  0x2e,       // =
+  0x37|SHIFT, // >
+  0x38|SHIFT, // ?
+  0x1f|SHIFT, // @
+  KEY_A|SHIFT, // A
+  KEY_B|SHIFT, // B
+  KEY_C|SHIFT, // C
+  KEY_D|SHIFT, // D
+  KEY_E|SHIFT, // E
+  KEY_F|SHIFT, // F
+  KEY_G|SHIFT, // G
+  KEY_H|SHIFT, // H
+  KEY_I|SHIFT, // I
+  KEY_J|SHIFT, // J
+  KEY_K|SHIFT, // K
+  KEY_L|SHIFT, // L
+  KEY_M|SHIFT, // M
+  KEY_N|SHIFT, // N
+  KEY_O|SHIFT, // O
+  KEY_P|SHIFT, // P
+  KEY_Q|SHIFT, // Q
+  KEY_R|SHIFT, // R
+  KEY_S|SHIFT, // S
+  KEY_T|SHIFT, // T
+  KEY_U|SHIFT, // U
+  KEY_V|SHIFT, // V
+  KEY_W|SHIFT, // W
+  KEY_X|SHIFT, // X
+  KEY_Y|SHIFT, // Y
+  KEY_Z|SHIFT, // Z
+  0x2f,       // [
+  0x31,       // bslash
+  0x30,       // ]
+  0x23|SHIFT, // ^
+  0x2d|SHIFT, // _
+  0x35,       // `
+  KEY_A,       // a
+  KEY_B,       // b
+  KEY_C,       // c
+  KEY_D,       // d
+  KEY_E,       // e
+  KEY_F,       // f
+  KEY_G,       // g
+  KEY_H,       // h
+  KEY_I,       // i
+  KEY_J,       // j
+  KEY_K,       // k
+  KEY_L,       // l
+  KEY_M,       // m
+  KEY_N,       // n
+  KEY_O,       // o
+  KEY_P,       // p
+  KEY_Q,       // q
+  KEY_R,       // r
+  KEY_S,       // s
+  KEY_T,       // t
+  KEY_U,       // u
+  KEY_V,       // v
+  KEY_W,       // w
+  KEY_X,       // x
+  KEY_Y,       // y
+  KEY_Z,       // z
+  0x2f|SHIFT, // {
+  0x31|SHIFT, // |
+  0x30|SHIFT, // }
+  0x35|SHIFT, // ~
+  KEY_NONE    // DEL
+};

@@ -209,46 +209,22 @@ namespace Keyboard
     // Convert character to modifier + keycode
     void CharToKey(Byte ch, Byte& keycode, Byte& modifier)
     {
-        bool isCapsLock = IsKeyLedOn(LED_CAPS_LOCK);
-        if (ch >= '0' && ch <= '9')
+        if (ch >= 0x00 && ch <= 0x7F)
         {
-            modifier = 0;
-            keycode  = (ch == '0') ? 39 : 30 + (ch - '1');
-        }
-        else if (ch >= 'a' && ch <= 'z')
-        {
-            modifier = isCapsLock ? KEY_MOD_LSHIFT : 0;
-            keycode  = 4 + (ch - 'a');
-        }
-        else if (ch >= 'A' && ch <= 'Z')
-        {
-            modifier = isCapsLock ? 0 : KEY_MOD_LSHIFT;
-            keycode  = 4 + (ch - 'A');
+            ch = pgm_read_byte(asciimap + ch);
+
+            modifier = ch & SHIFT ? KEY_MOD_LSHIFT : 0;
+            keycode = ch & ~SHIFT;
+
+            if (keycode >= KEY_A && keycode <= KEY_Z && IsKeyLedOn(LED_CAPS_LOCK))
+            {
+                modifier ^= KEY_MOD_LSHIFT;
+            }
         }
         else
         {
             modifier = 0;
-            keycode  = 0;
-            switch (ch)
-            {
-            case '.':
-                keycode = 0x37;
-                break;
-            case '_':
-                modifier = KEY_MOD_LSHIFT;
-            case '-':
-                keycode = 0x2D;
-                break;
-            case ' ':
-                keycode = 0x2C;
-                break;
-            case '\t':
-                keycode = 0x2B;
-                break;
-            case '\n':
-                keycode = 0x28;
-                break;
-            }
+            keycode = KEY_NONE;
         }
     }
 }
