@@ -27,6 +27,11 @@ namespace Output
         Keyboard::KeyStroke(keycode, modifier);
     }
 
+    void PrintText(const char* str)
+    {
+        for (char ch; ch = *str; ++str) PrintChar(ch);
+    }
+
     void PrintText(const __FlashStringHelper* str)
     {
         const char* ptr = (const char*)str;
