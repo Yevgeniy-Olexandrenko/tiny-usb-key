@@ -4,7 +4,7 @@
 #include <avr/interrupt.h>
 #include <util/delay.h>
 
-#include "usbdrv/usbdrv.h"
+#include "../usbdrv/usbdrv.h"
 #include "hid_defines.h"
 
 typedef unsigned char Byte;

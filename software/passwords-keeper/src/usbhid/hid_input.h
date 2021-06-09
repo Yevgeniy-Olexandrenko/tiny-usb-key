@@ -31,7 +31,7 @@ namespace Input
         isTurnedOn = false;
     }
 
-    void SetSubmit(bool yes)
+    void AllowSubmit(bool yes)
     {
         pendingSubmitTime = yes ? millis() : 0;
     }
@@ -43,7 +43,7 @@ namespace Input
             bool isScrollLockOn = Keyboard::IsPCLedOn(LED_SCROLL_LOCK);
             if (isTurnedOn != isScrollLockOn)
             {
-                SetSubmit(false);
+                AllowSubmit(false);
                 isTurnedOn = isScrollLockOn;
                 ProcessAction(isTurnedOn ? ACTION_TURN_ON : ACTION_TURN_OFF);
             }
@@ -53,7 +53,7 @@ namespace Input
         {
             if (Keyboard::IsPCLedChanged(LED_CAPS_LOCK))
             {
-                SetSubmit(true);
+                AllowSubmit(true);
                 ProcessAction(ACTION_NEXT);
             }
 
@@ -62,7 +62,7 @@ namespace Input
                 Time nowTime = millis();
                 if (nowTime - pendingSubmitTime >= 2000)
                 {
-                    SetSubmit(false);
+                    AllowSubmit(false);
                     ProcessAction(ACTION_SUBMIT);
                 }
             }            

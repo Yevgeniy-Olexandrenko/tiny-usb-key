@@ -9,7 +9,6 @@ class __FlashStringHelper;
 namespace Output
 {
     Time ledSwitchTime;
-    bool isLedBlinking;
     bool isLedOn;
 
     void PrintClear()
@@ -46,19 +45,18 @@ namespace Output
 
     void LedOn()
     {
-        isLedBlinking = false;
+        ledSwitchTime = 0;
         isLedOn = true;
     }
 
     void LedOff()
     {
-        isLedBlinking = false;
+        ledSwitchTime = 0;
         isLedOn = false;
     }
 
     void LedBlinking()
     {
-        isLedBlinking = true;
         ledSwitchTime = millis();
     }
 
@@ -70,7 +68,7 @@ namespace Output
 
     void Update()
     {
-        if (isLedBlinking)
+        if (ledSwitchTime)
         {
             Time nowTime = millis();
             if (nowTime - ledSwitchTime >= 1000)

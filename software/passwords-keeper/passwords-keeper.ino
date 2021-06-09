@@ -1,10 +1,12 @@
 
-#include "src/hid_keyboard.h"
-#include "src/hid_input.h"
-#include "src/hid_output.h"
+#include "src/usbhid/hid_keyboard.h"
+#include "src/usbhid/hid_input.h"
+#include "src/usbhid/hid_output.h"
 
-PROGMEM const char msgFirmware[]  = "Passwords Keeper 1.0";
-PROGMEM const char storedPinCode[] = "2423";
+#include "src/credentials_builder.h"
+#include "credentials.h"
+
+PROGMEM const char msgFirmware[] = "Passwords Keeper 1.0";
 
 enum
 {
@@ -46,7 +48,7 @@ void GoToNextPinCodeDigitIndex()
     enteredPinCode[pinCodeDigitIndex] = '0';
     enteredPinCode[pinCodeDigitIndex + 1] = 0;
     PrintPinCode();
-    Input::SetSubmit(true);
+    Input::AllowSubmit(true);
 }
 
 void PrintCredential()
@@ -73,7 +75,7 @@ void GoToStateDisplayFirmware()
     Output::LedBlinking();
     state = STATE_DISPLAY_FIRMWARE;
     Output::PrintMessage(FPSTR(msgFirmware));
-    Input::SetSubmit(true);
+    Input::AllowSubmit(true);
 }
 
 void GoToStateChooseCredential()
@@ -81,7 +83,7 @@ void GoToStateChooseCredential()
     Output::LedOn();
     state = STATE_CHOOSE_CREDENTIAL;
     PrintCredential();
-    Input::SetSubmit(true);
+    Input::AllowSubmit(true);
 }
 
 void GoToStateEnterPinCode()
