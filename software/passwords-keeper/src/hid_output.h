@@ -14,17 +14,17 @@ namespace Output
 
     void PrintClear()
     {
-        Keyboard::SendKeyStroke(KEY_NONE);
-        Keyboard::SendKeyStroke(KEY_HOME);
-        Keyboard::SendKeyStroke(KEY_END, KEY_MOD_LSHIFT);
-        Keyboard::SendKeyStroke(KEY_BACKSPACE);
+        Keyboard::KeyRelease();
+        Keyboard::KeyStroke(KEY_HOME);
+        Keyboard::KeyStroke(KEY_END, KEY_MOD_LSHIFT);
+        Keyboard::KeyStroke(KEY_BACKSPACE);
     }
 
     void PrintChar(char ch)
     {
         Byte keycode, modifier;
         Keyboard::CharToKey(ch, keycode, modifier);
-        Keyboard::SendKeyStroke(keycode, modifier);
+        Keyboard::KeyStroke(keycode, modifier);
     }
 
     void PrintText(const __FlashStringHelper* str)

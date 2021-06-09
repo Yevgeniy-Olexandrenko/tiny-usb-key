@@ -70,9 +70,10 @@ namespace Keyboard
 
     typedef volatile Byte LedState;
 
-    static Report report;     // sent to PC
-    static LedState ledState; // received from PC
-    static Byte idleRate;     // repeat rate for keyboards
+    Report report;
+    LedState ledState;
+    LedState ledChanges;
+    Byte idleRate;
 }
 
 usbMsgLen_t usbFunctionSetup(Byte data[8])
@@ -107,26 +108,12 @@ usbMsgLen_t usbFunctionSetup(Byte data[8])
 
 usbMsgLen_t usbFunctionWrite(Byte *data, Byte len)
 {
-    if (Byte ledChanges = (Keyboard::ledState ^ data[0]))
+    if (Keyboard::ledChanges = (Keyboard::ledState ^ data[0]))
     {
         bool isPowerOn = (Keyboard::ledState == 0xFF);
         Keyboard::ledState = data[0];
 
-        if (isPowerOn)
-        {
-            PowerOn();
-        }
-        else
-        {
-            if (ledChanges & LED_NUM_LOCK)
-                NumLockToggle(Keyboard::ledState & LED_NUM_LOCK);
-
-            if (ledChanges & LED_CAPS_LOCK)
-                CapsLockToggle(Keyboard::ledState & LED_CAPS_LOCK);
-
-            if (ledChanges & LED_SCROLL_LOCK)
-                ScrollLockToggle(Keyboard::ledState & LED_SCROLL_LOCK);
-        }
+        if (isPowerOn) PowerOn();
     }
     return 1; // Data read, not expecting more
 }
@@ -137,6 +124,7 @@ namespace Keyboard
     {
         memset(&report, 0, sizeof(report));
         ledState = 0xFF;
+        ledChanges = 0x00;
 
         wdt_enable(WDTO_1S);
         usbInit();
@@ -172,7 +160,7 @@ namespace Keyboard
 
     // Sends a key press only, with modifiers - no release
     // To release the key, send again with keyPress = 0
-    void SendKeyPress(Byte keyPress, Byte modifiers)
+    void KeyPress(Byte keyPress, Byte modifiers)
     {
         while (!usbInterruptIsReady())
         {
@@ -188,23 +176,27 @@ namespace Keyboard
         usbSetInterrupt((Byte*)&report, sizeof(report));
     }
 
+    void KeyRelease()
+    {
+        KeyPress(0, 0);
+    }
+
     // Sends a key press AND release with modifiers
-    void SendKeyStroke(byte keyStroke, byte modifiers)
+    void KeyStroke(byte keyStroke, byte modifiers)
     {
-        SendKeyPress(keyStroke, modifiers);
-        SendKeyPress(0, 0);
+        KeyPress(keyStroke, modifiers);
+        KeyRelease();
     }
 
-    void SendKeyStroke(byte keyStroke)
+    void KeyStroke(byte keyStroke)
     {
-        SendKeyStroke(keyStroke, 0);
+        KeyStroke(keyStroke, 0);
     }
 
-    // Read LED status
-    bool IsKeyLedOn(Byte keyLedMask)
-    {
-        return (Keyboard::ledState & keyLedMask);
-    }
+    // Read PC Keyboard LEDs status
+    bool IsPCLedChanged(Byte ledMask) { return (ledChanges & ledMask); }
+    bool IsPCLedOn(Byte ledMask) { return (ledState & ledMask); }
+    void ConsumePCLedChanges() { ledChanges = 0; }
 
     // Convert character to modifier + keycode
     void CharToKey(Byte ch, Byte& keycode, Byte& modifier)
@@ -216,7 +208,7 @@ namespace Keyboard
             modifier = ch & SHIFT ? KEY_MOD_LSHIFT : 0;
             keycode = ch & ~SHIFT;
 
-            if (keycode >= KEY_A && keycode <= KEY_Z && IsKeyLedOn(LED_CAPS_LOCK))
+            if (keycode >= KEY_A && keycode <= KEY_Z && IsPCLedOn(LED_CAPS_LOCK))
             {
                 modifier ^= KEY_MOD_LSHIFT;
             }

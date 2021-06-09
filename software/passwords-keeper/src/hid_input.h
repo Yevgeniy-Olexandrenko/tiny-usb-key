@@ -1,5 +1,12 @@
 #pragma once
 
+void PowerOn()
+{
+    Keyboard::KeyRelease();
+    if (Keyboard::IsPCLedOn(LED_SCROLL_LOCK)) Keyboard::KeyStroke(KEY_SCROLLLOCK);
+    if (Keyboard::IsPCLedOn(LED_CAPS_LOCK)) Keyboard::KeyStroke(KEY_CAPSLOCK);
+}
+
 namespace Input
 {
     enum Action
@@ -12,49 +19,10 @@ namespace Input
     };
 
     bool isTurnedOn;
-    bool isPendingSubmit;
     Time pendingSubmitTime;
 }
 
-/* Forward declarations */
 void ProcessAction(Input::Action action);
-
-/* Handlers for PC's control keys */
-void PowerOn()
-{
-    Keyboard::SendKeyStroke(KEY_NONE);
-    if (Keyboard::IsKeyLedOn(LED_SCROLL_LOCK)) Keyboard::SendKeyStroke(KEY_SCROLLLOCK);
-    if (Keyboard::IsKeyLedOn(LED_CAPS_LOCK)) Keyboard::SendKeyStroke(KEY_CAPSLOCK);
-}
-
-void NumLockToggle(bool isOn)
-{
-    // do nothing
-}
-
-void CapsLockToggle(bool isOn)
-{
-    if (Input::isTurnedOn)
-    {
-        Input::isPendingSubmit = true;
-        Input::pendingSubmitTime = millis();
-
-        ProcessAction(Input::ACTION_NEXT);
-    }    
-}
-
-void ScrollLockToggle(bool isOn)
-{
-    if (isOn != Input::isTurnedOn)
-    {
-        Input::isPendingSubmit = false;
-
-        if (Input::isTurnedOn = isOn)
-            ProcessAction(Input::ACTION_TURN_ON);
-        else
-            ProcessAction(Input::ACTION_TURN_OFF);
-    }
-}
 
 namespace Input
 {
@@ -65,17 +33,36 @@ namespace Input
 
     void Update()
     {
+        if (Keyboard::IsPCLedChanged(LED_SCROLL_LOCK))
+        {
+            bool isScrollLockOn = Keyboard::IsPCLedOn(LED_SCROLL_LOCK);
+            if (isTurnedOn != isScrollLockOn)
+            {
+                isTurnedOn = isScrollLockOn;
+                ProcessAction(isTurnedOn ? ACTION_TURN_ON : ACTION_TURN_OFF);
+                pendingSubmitTime = 0;
+            }
+        }
+
         if (isTurnedOn)
         {
-            if (isPendingSubmit)
+            if (Keyboard::IsPCLedChanged(LED_CAPS_LOCK))
+            {
+                ProcessAction(ACTION_NEXT);
+                pendingSubmitTime = millis();
+            }
+
+            if (pendingSubmitTime)
             {
                 Time nowTime = millis();
                 if (nowTime - pendingSubmitTime >= 2000)
                 {
-                    isPendingSubmit = false;
-                    ProcessAction(Input::ACTION_SUBMIT);
+                    ProcessAction(ACTION_SUBMIT);
+                    pendingSubmitTime = 0;
                 }
             }            
         }
+
+        Keyboard::ConsumePCLedChanges();
     }
 }
