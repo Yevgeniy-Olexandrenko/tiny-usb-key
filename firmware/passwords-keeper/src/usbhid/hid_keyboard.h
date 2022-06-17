@@ -108,12 +108,13 @@ usbMsgLen_t usbFunctionSetup(Byte data[8])
 
 usbMsgLen_t usbFunctionWrite(Byte *data, Byte len)
 {
-    if (Keyboard::ledChanges = (Keyboard::ledState ^ data[0]))
+    if (Keyboard::ledState != data[0])
     {
-        bool isPowerOn = (Keyboard::ledState == 0xFF);
+        if (Keyboard::ledState != 0xFF)
+        {
+            Keyboard::ledChanges = (Keyboard::ledState ^ data[0]);
+        }
         Keyboard::ledState = data[0];
-
-        if (isPowerOn) PowerOn();
     }
     return 1; // Data read, not expecting more
 }
