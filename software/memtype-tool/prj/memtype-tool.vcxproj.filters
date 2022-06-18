@@ -4,10 +4,93 @@
     <Filter Include="Sources">
       <UniqueIdentifier>{c7153666-2666-411d-b5f0-aa4962746682}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\libusb">
+      <UniqueIdentifier>{e6805d9f-c066-4c63-8a50-2aaead4f8e55}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\libusb\os">
+      <UniqueIdentifier>{941af1e8-3e2b-41d1-830d-36858a370f14}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\main.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\memtype_api.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\noekeon_api.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\libusb\os\events_windows.c">
+      <Filter>Sources\libusb\os</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\libusb\os\threads_windows.c">
+      <Filter>Sources\libusb\os</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\libusb\os\windows_common.c">
+      <Filter>Sources\libusb\os</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\libusb\core.c">
+      <Filter>Sources\libusb</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\libusb\descriptor.c">
+      <Filter>Sources\libusb</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\libusb\hotplug.c">
+      <Filter>Sources\libusb</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\libusb\io.c">
+      <Filter>Sources\libusb</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\libusb\strerror.c">
+      <Filter>Sources\libusb</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\libusb\sync.c">
+      <Filter>Sources\libusb</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\libusb\os\windows_usbdk.c">
+      <Filter>Sources\libusb\os</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\libusb\os\windows_winusb.c">
+      <Filter>Sources\libusb\os</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\src\memtype_api.h">
+      <Filter>Sources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\noekeon_api.h">
+      <Filter>Sources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\libusb\os\events_windows.h">
+      <Filter>Sources\libusb\os</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\libusb\os\threads_windows.h">
+      <Filter>Sources\libusb\os</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\libusb\os\windows_common.h">
+      <Filter>Sources\libusb\os</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\libusb\config.h">
+      <Filter>Sources\libusb</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\libusb\libusb.h">
+      <Filter>Sources\libusb</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\libusb\libusbi.h">
+      <Filter>Sources\libusb</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\libusb\version.h">
+      <Filter>Sources\libusb</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\libusb\version_nano.h">
+      <Filter>Sources\libusb</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\libusb\os\windows_usbdk.h">
+      <Filter>Sources\libusb\os</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\libusb\os\windows_winusb.h">
+      <Filter>Sources\libusb\os</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -19,7 +19,34 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\libusb\core.c" />
+    <ClCompile Include="..\src\libusb\descriptor.c" />
+    <ClCompile Include="..\src\libusb\hotplug.c" />
+    <ClCompile Include="..\src\libusb\io.c" />
+    <ClCompile Include="..\src\libusb\os\events_windows.c" />
+    <ClCompile Include="..\src\libusb\os\threads_windows.c" />
+    <ClCompile Include="..\src\libusb\os\windows_common.c" />
+    <ClCompile Include="..\src\libusb\os\windows_usbdk.c" />
+    <ClCompile Include="..\src\libusb\os\windows_winusb.c" />
+    <ClCompile Include="..\src\libusb\strerror.c" />
+    <ClCompile Include="..\src\libusb\sync.c" />
     <ClCompile Include="..\src\main.cpp" />
+    <ClCompile Include="..\src\memtype_api.cpp" />
+    <ClCompile Include="..\src\noekeon_api.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\src\libusb\config.h" />
+    <ClInclude Include="..\src\libusb\libusb.h" />
+    <ClInclude Include="..\src\libusb\libusbi.h" />
+    <ClInclude Include="..\src\libusb\os\events_windows.h" />
+    <ClInclude Include="..\src\libusb\os\threads_windows.h" />
+    <ClInclude Include="..\src\libusb\os\windows_common.h" />
+    <ClInclude Include="..\src\libusb\os\windows_usbdk.h" />
+    <ClInclude Include="..\src\libusb\os\windows_winusb.h" />
+    <ClInclude Include="..\src\libusb\version.h" />
+    <ClInclude Include="..\src\libusb\version_nano.h" />
+    <ClInclude Include="..\src\memtype_api.h" />
+    <ClInclude Include="..\src\noekeon_api.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -89,8 +116,10 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(ProjectDir)../src/libusb;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -103,8 +132,10 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(ProjectDir)../src/libusb;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -117,8 +148,10 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(ProjectDir)../src/libusb;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -131,8 +164,10 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(ProjectDir)../src/libusb;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
