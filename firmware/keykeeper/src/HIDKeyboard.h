@@ -2,8 +2,7 @@
 
 namespace hid
 {
-    enum
-    {
+    enum {
         LED_NUM_LOCK    = 0x01,
         LED_CAPS_LOCK   = 0x02,
         LED_SCROLL_LOCK = 0x04
@@ -14,11 +13,12 @@ namespace hid
         memset(&usb::keyboardReport, 0, sizeof(usb::keyboardReport));
         usb::keyboardLedsState  = 0xFF;
         usb::keyboardLedsChange = 0x00;
+        usb::Init();
     }
 
     void Update()
     {
-        // do nothing
+        usb::Update();
     }
 
     // Sends a key press only with modifiers, no release
