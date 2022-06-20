@@ -8,19 +8,6 @@ namespace hid
         LED_SCROLL_LOCK = 0x04
     };
 
-    void Init()
-    {
-        memset(&usb::keyboardReport, 0, sizeof(usb::keyboardReport));
-        usb::keyboardLedsState  = 0xFF;
-        usb::keyboardLedsChange = 0x00;
-        usb::Init();
-    }
-
-    void Update()
-    {
-        usb::Update();
-    }
-
     // Sends a key press only with modifiers, no release
     void KeyPress(uint8_t key, uint8_t mod)
     {
@@ -28,7 +15,7 @@ namespace hid
         // we know the previous key press was sent
         usb::WaitForReadiness();
         usb::keyboardReport.modifier = mod;
-        usb::keyboardReport.keycode[0] = key;
+        usb::keyboardReport.keycode  = key;
         usb::SendKeyboardReport();
     }
 
@@ -60,10 +47,8 @@ namespace hid
         if (ch >= 0x00 && ch <= 0x7F)
         {
             ch = pgm_read_byte(asciimap + ch);
-
             mod = ch & SHIFT ? KEY_MOD_LSHIFT : 0;
             key = ch & ~SHIFT;
-
             if (key >= KEY_A && key <= KEY_Z && IsPCLedOn(LED_CAPS_LOCK))
             {
                 mod ^= KEY_MOD_LSHIFT;

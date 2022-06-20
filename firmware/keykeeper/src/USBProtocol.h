@@ -4,9 +4,9 @@ namespace usb
 {
     struct KeyboardReport
     {
+        // uint8_t reportId;
         uint8_t modifier;
-        uint8_t reserved;
-        uint8_t keycode[6];
+        uint8_t keycode;
     };
 
     struct CustomReport
@@ -14,7 +14,8 @@ namespace usb
         uint8_t data[8];
     };
 
-    uint8_t idleRate;
+    uint8_t idleRate  = 500 / 4; // see HID1_11.pdf sect 7.2.4
+    uint8_t protocolVersion = 0; // see HID1_11.pdf sect 7.2.6
 
     KeyboardReport keyboardReport;
     uint8_t keyboardLedsState;
@@ -27,42 +28,47 @@ namespace usb
 /* http://www.frank-zhao.com/cache/usbbusinesscard_details.php */
 PROGMEM const char usbHidReportDescriptor[USB_CFG_HID_REPORT_DESCRIPTOR_LENGTH] = 
 {
-    0x05, 0x01, // USAGE_PAGE (Generic Desktop)
-    0x09, 0x06, // USAGE (Keyboard)
-    0xa1, 0x01, // COLLECTION (Application)
-
-    0x75, 0x01, //   REPORT_SIZE (1)
-    0x95, 0x08, //   REPORT_COUNT (8)
-    0x05, 0x07, //   USAGE_PAGE (Keyboard)(Key Codes)
-    0x19, 0xe0, //   USAGE_MINIMUM (Keyboard LeftControl)(224)
-    0x29, 0xe7, //   USAGE_MAXIMUM (Keyboard Right GUI)(231)
-    0x15, 0x00, //   LOGICAL_MINIMUM (0)
-    0x25, 0x01, //   LOGICAL_MAXIMUM (1)
-    0x81, 0x02, //   INPUT (Data,Var,Abs) ; Modifier byte
-
-    0x95, 0x01, //   REPORT_COUNT (1)
-    0x75, 0x08, //   REPORT_SIZE (8)
-    0x81, 0x03, //   INPUT (Cnst,Var,Abs) ; Reserved byte
-
-    0x95, 0x05, //   REPORT_COUNT (5)
-    0x75, 0x01, //   REPORT_SIZE (1)
-    0x05, 0x08, //   USAGE_PAGE (LEDs)
-    0x19, 0x01, //   USAGE_MINIMUM (Num Lock)
-    0x29, 0x05, //   USAGE_MAXIMUM (Kana)
-    0x91, 0x02, //   OUTPUT (Data,Var,Abs) ; LED report
-    0x95, 0x01, //   REPORT_COUNT (1)
-    0x75, 0x03, //   REPORT_SIZE (3)
-    0x91, 0x03, //   OUTPUT (Cnst,Var,Abs) ; LED report padding
-
-    0x95, 0x06, //   REPORT_COUNT (6)
-    0x75, 0x08, //   REPORT_SIZE (8)
-    0x15, 0x00, //   LOGICAL_MINIMUM (0)
-    0x25, 0x65, //   LOGICAL_MAXIMUM (101)
-    0x05, 0x07, //   USAGE_PAGE (Keyboard)(Key Codes)
-    0x19, 0x00, //   USAGE_MINIMUM (Reserved (no event indicated))(0)
-    0x29, 0x65, //   USAGE_MAXIMUM (Keyboard Application)(101)
-    0x81, 0x00, //   INPUT (Data,Ary,Abs)
-    0xc0        // END_COLLECTION
+    0x05, 0x01,        // Usage Page (Generic Desktop Ctrls)
+    0x09, 0x06,        // Usage (Keyboard)
+    0xA1, 0x01,        // Collection (Application)
+//    0x85, 0x01,        //   Report ID (1)
+    0x75, 0x01,        //   Report Size (1)
+    0x95, 0x08,        //   Report Count (8)
+    0x05, 0x07,        //   Usage Page (Kbrd/Keypad)
+    0x19, 0xE0,        //   Usage Minimum (0xE0)
+    0x29, 0xE7,        //   Usage Maximum (0xE7)
+    0x15, 0x00,        //   Logical Minimum (0)
+    0x25, 0x01,        //   Logical Maximum (1)
+    0x81, 0x02,        //   Input (Data,Var,Abs,No Wrap,Linear,Preferred State,No Null Position)
+    0x75, 0x08,        //   Report Size (8)
+    0x95, 0x01,        //   Report Count (1)
+    0x05, 0x07,        //   Usage Page (Kbrd/Keypad)
+    0x19, 0x00,        //   Usage Minimum (0x00)
+    0x29, 0x65,        //   Usage Maximum (0x65)
+    0x15, 0x00,        //   Logical Minimum (0)
+    0x25, 0x65,        //   Logical Maximum (101)
+    0x81, 0x00,        //   Input (Data,Array,Abs,No Wrap,Linear,Preferred State,No Null Position)
+    0x75, 0x01,        //   Report Size (1)
+    0x95, 0x03,        //   Report Count (3)
+    0x05, 0x08,        //   Usage Page (LEDs)
+    0x19, 0x01,        //   Usage Minimum (Num Lock)
+    0x29, 0x03,        //   Usage Maximum (Scroll Lock)
+    0x91, 0x02,        //   Output (Data,Var,Abs,No Wrap,Linear,Preferred State,No Null Position,Non-volatile)
+    0x75, 0x05,        //   Report Size (5)
+    0x95, 0x01,        //   Report Count (1)
+    0x91, 0x03,        //   Output (Const,Var,Abs,No Wrap,Linear,Preferred State,No Null Position,Non-volatile)
+    0xC0,              // End Collection
+    // 0x06, 0x00, 0xFF,  // Usage Page (Vendor Defined 0xFF00)
+    // 0x09, 0x01,        // Usage (0x01)
+    // 0xA1, 0x01,        // Collection (Application)
+    // 0x85, 0x02,        //   Report ID (2)
+    // 0x75, 0x08,        //   Report Size (8)
+    // 0x95, 0x08,        //   Report Count (8)
+    // 0x09, 0x00,        //   Usage (0x00)
+    // 0x15, 0x00,        //   Logical Minimum (0)
+    // 0x26, 0xFF, 0x00,  //   Logical Maximum (255)
+    // 0xB2, 0x02, 0x01,  //   Feature (Data,Var,Abs,No Wrap,Linear,Preferred State,No Null Position,Non-volatile,Buffered Bytes)
+    // 0xC0,              // End Collection
 };
 
 usbMsgLen_t usbFunctionSetup(uint8_t data[8])
@@ -74,16 +80,36 @@ usbMsgLen_t usbFunctionSetup(uint8_t data[8])
         switch (rq->bRequest)
         {
         case USBRQ_HID_GET_REPORT:
-            // send "no keys pressed" if asked here
-            usbMsgPtr = (usbMsgPtr_t)&usb::keyboardReport;
-            usb::keyboardReport.modifier = 0;
-            usb::keyboardReport.keycode[0] = 0;
-            return sizeof(usb::keyboardReport);
+            // if (rq->wValue.bytes[0] == 0x01)
+            {
+                // send "no keys pressed" if asked here
+                usbMsgPtr = (usbMsgPtr_t)&usb::keyboardReport;
+                usb::keyboardReport.modifier = 0;
+                usb::keyboardReport.keycode  = 0;
+                return sizeof(usb::keyboardReport);
+            }
+            // else if (rq->wValue.bytes[0] == 0x02)
+            // {
+            //     // TODO: send data to host
+            //     usbMsgPtr = (usbMsgPtr_t)&usb::customReport;
+            //     return sizeof(usb::customReport);
+            // }
+            break;
 
         case USBRQ_HID_SET_REPORT:
-            // if wLength == 1, should be LED state
+            // if (rq->wValue.bytes[0] == 0x01 && rq->wLength.word == 1)
+            // {
+            //     // if wLength == 1, should be LED state
+            //     return USB_NO_MSG;
+            // }
+            // else if (rq->wValue.bytes[0] == 0x02)
+            // {
+            //     // call usbFunctionWrite() to read data from host
+            //     return USB_NO_MSG;
+            // }
             if (rq->wLength.word == 1)
             {
+                // if wLength == 1, should be LED state
                 return USB_NO_MSG;
             }
             break;
@@ -96,6 +122,14 @@ usbMsgLen_t usbFunctionSetup(uint8_t data[8])
         case USBRQ_HID_SET_IDLE:
             // save idle rate from PC as required by spec
             usb::idleRate = rq->wValue.bytes[1];
+            break;
+
+        case USBRQ_HID_GET_PROTOCOL:
+            usbMsgPtr =  (usbMsgPtr_t)&usb::protocolVersion;
+            return 1;
+
+        case USBRQ_HID_SET_PROTOCOL:
+            usb::protocolVersion = rq->wValue.bytes[1];
             break;
         }
     }
@@ -121,6 +155,10 @@ namespace usb
 {
     void Init()
     {
+        // keyboardReport.reportId = 0x01;
+        keyboardLedsState  = 0xFF;
+        keyboardLedsChange = 0x00;
+
         wdt_enable(WDTO_1S);
         usbInit();
         usbDeviceDisconnect();

@@ -190,15 +190,16 @@ namespace main
 
     void Init()
     {
-        hid::Init();
+        usb::Init();
         led::Init();
         input::Init();
         state = STATE_TURNED_OFF;
+        //GoToStateDisplayFirmware();
     }
 
     void Update()
     {
-        hid::Update();
+        usb::Update();
         led::Update();
         input::Update();
     }
