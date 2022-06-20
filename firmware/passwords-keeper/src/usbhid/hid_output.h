@@ -60,6 +60,16 @@ namespace Output
         ledSwitchTime = millis();
     }
 
+    void LedLocked()
+    {
+        LedBlinking();
+    }
+
+    void LedUnlocked()
+    {
+        LedOn();
+    }
+
      void Init()
     {
         pinMode(1, OUTPUT);

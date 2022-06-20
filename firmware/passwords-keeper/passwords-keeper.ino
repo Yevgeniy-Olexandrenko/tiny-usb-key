@@ -21,6 +21,8 @@ char enteredPinCode[5];
 byte pinCodeDigitIndex;
 
 ////////////////////////////////////////////////////////////////////////////////
+// Pin code input
+////////////////////////////////////////////////////////////////////////////////
 
 bool IsPinCodeValid()
 {
@@ -44,12 +46,15 @@ void SwitchPinCodeDigit()
 
 void GoToNextPinCodeDigitIndex()
 {
-    pinCodeDigitIndex++;
-    enteredPinCode[pinCodeDigitIndex] = '0';
+    Input::AllowSubmission(true);
+    enteredPinCode[++pinCodeDigitIndex] = '0';
     enteredPinCode[pinCodeDigitIndex + 1] = 0;
     PrintPinCode();
-    Input::AllowSubmit(true);
 }
+
+////////////////////////////////////////////////////////////////////////////////
+// Credential choose and submit
+////////////////////////////////////////////////////////////////////////////////
 
 void PrintCredential()
 {
@@ -62,28 +67,15 @@ void SubmitCredential()
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-
-void GoToStateTurnedOff()
-{
-    Output::LedOff();
-    state = STATE_TURNED_OFF;
-    Output::PrintClear();
-}
+// Go to next state
+////////////////////////////////////////////////////////////////////////////////
 
 void GoToStateDisplayFirmware()
 {
-    Output::LedBlinking();
     state = STATE_DISPLAY_FIRMWARE;
+    Input::AllowSubmission(true);
+    Output::LedLocked();
     Output::PrintMessage(FPSTR(msgFirmware));
-    Input::AllowSubmit(true);
-}
-
-void GoToStateChooseCredential()
-{
-    Output::LedOn();
-    state = STATE_CHOOSE_CREDENTIAL;
-    PrintCredential();
-    Input::AllowSubmit(true);
 }
 
 void GoToStateEnterPinCode()
@@ -99,28 +91,35 @@ void GoToStatePinCodeInvalid()
     Output::PrintMessage(F("PIN: INVALID"));
 }
 
+void GoToStateChooseCredential()
+{
+    state = STATE_CHOOSE_CREDENTIAL;
+    Input::AllowSubmission(true);
+    Output::LedUnlocked();
+    PrintCredential();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Update current state
 ////////////////////////////////////////////////////////////////////////////////
 
-void StateTurnedOff(Input::Action action)
+void UpdateStateTurnedOff(Input::Action action)
 {
-    if (action == Input::ACTION_TURN_ON)
+    if (action == Input::ACTION_NEXT)
     {
         GoToStateDisplayFirmware();
     }
 }
 
-void StateDisplayFirmware(Input::Action action)
+void UpdateStateDisplayFirmware(Input::Action action)
 {
     if (action == Input::ACTION_NEXT || action == Input::ACTION_SUBMIT)
     {
-        if (IsPinCodeValid())
-            GoToStateChooseCredential();
-        else
-            GoToStateEnterPinCode();
+        GoToStateEnterPinCode();
     }
 }
 
-void StateEnterPinCode(Input::Action action)
+void UpdateStateEnterPinCode(Input::Action action)
 {
     if (action == Input::ACTION_NEXT)
     {
@@ -141,7 +140,7 @@ void StateEnterPinCode(Input::Action action)
     }
 }
 
-void StatePinCodeInvalid(Input::Action action)
+void UpdateStatePinCodeInvalid(Input::Action action)
 {
     if (action == Input::ACTION_NEXT)
     {
@@ -149,7 +148,7 @@ void StatePinCodeInvalid(Input::Action action)
     }
 }
 
-void StateChooseCredential(Input::Action action)
+void UpdateStateChooseCredential(Input::Action action)
 {
     if (action == Input::ACTION_NEXT)
     {
@@ -166,20 +165,13 @@ void StateChooseCredential(Input::Action action)
 
 void ProcessAction(Input::Action action)
 {
-    if (action == Input::ACTION_TURN_OFF)
+    switch (state)
     {
-        GoToStateTurnedOff();
-    }
-    else
-    {
-        switch (state)
-        {
-            case STATE_TURNED_OFF: StateTurnedOff(action); break;
-            case STATE_DISPLAY_FIRMWARE:StateDisplayFirmware(action); break;
-            case STATE_ENTER_PIN_CODE: StateEnterPinCode(action); break;
-            case STATE_PIN_CODE_INVALID: StatePinCodeInvalid(action); break;
-            case STATE_CHOOSE_CREDENTIAL: StateChooseCredential(action); break;
-        }
+        case STATE_TURNED_OFF: UpdateStateTurnedOff(action); break;
+        case STATE_DISPLAY_FIRMWARE:UpdateStateDisplayFirmware(action); break;
+        case STATE_ENTER_PIN_CODE: UpdateStateEnterPinCode(action); break;
+        case STATE_PIN_CODE_INVALID: UpdateStatePinCodeInvalid(action); break;
+        case STATE_CHOOSE_CREDENTIAL: UpdateStateChooseCredential(action); break;
     }
 }
 
