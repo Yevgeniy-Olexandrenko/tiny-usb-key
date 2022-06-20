@@ -26,8 +26,7 @@ namespace hid
     {
         // We wait until we can send key press, so 
         // we know the previous key press was sent
-
-        usb::WaitForReady();
+        usb::WaitForReadiness();
         usb::keyboardReport.modifier = mod;
         usb::keyboardReport.keycode[0] = key;
         usb::SendKeyboardReport();
@@ -51,8 +50,8 @@ namespace hid
     }
 
     // Read PC Keyboard LEDs status
-    bool IsPCLedChanged(uint8_t mask) { return (usb::keyboardLedsChange & mask); }
     bool IsPCLedOn(uint8_t mask) { return (usb::keyboardLedsState & mask); }
+    bool IsPCLedChanged(uint8_t mask) { return (usb::keyboardLedsChange & mask); }
     void ConsumePCLedChanges() { usb::keyboardLedsChange = 0x00; }
 
     // Convert character to modifier + keycode

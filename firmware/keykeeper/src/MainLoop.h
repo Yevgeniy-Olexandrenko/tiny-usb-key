@@ -193,7 +193,6 @@ namespace main
         hid::Init();
         led::Init();
         input::Init();
-        output::Init();
         state = STATE_TURNED_OFF;
     }
 
@@ -202,7 +201,6 @@ namespace main
         hid::Update();
         led::Update();
         input::Update();
-        output::Update();
     }
 
     void ProcessAction(input::Action action)

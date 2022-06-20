@@ -12,26 +12,32 @@ namespace input
     uint32_t pendingSubmitTime;
 }
 
-void ProcessAction(input::Action action);
+namespace main
+{
+    void ProcessAction(input::Action action);
+}
 
 namespace input
 {
-    void Init()
-    {
-        // do nothing
-    }
-
+    
     void AllowSubmission(bool yes)
     {
         pendingSubmitTime = (yes ? millis() : 0);
     }
 
+    void Init()
+    {
+        AllowSubmission(false);
+    }
+
     void Update()
     {
+        Action action = ACTION_NONE;
+
         if (hid::IsPCLedChanged(hid::LED_CAPS_LOCK))
         {
             AllowSubmission(true);
-            ProcessAction(input::ACTION_NEXT);
+            action = input::ACTION_NEXT;
         }
 
         else if (pendingSubmitTime)
@@ -40,10 +46,11 @@ namespace input
             if (nowTime - pendingSubmitTime >= 2000)
             {
                 AllowSubmission(false);
-                ProcessAction(input::ACTION_SUBMIT);
+                action = input::ACTION_SUBMIT;
             }
         }
 
         hid::ConsumePCLedChanges();
+        main::ProcessAction(action);
     }
 }

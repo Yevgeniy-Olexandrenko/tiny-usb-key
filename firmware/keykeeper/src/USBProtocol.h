@@ -12,7 +12,7 @@ namespace usb
     struct CustomReport
     {
         uint8_t data[8];
-    }
+    };
 
     uint8_t idleRate;
 
@@ -123,14 +123,10 @@ namespace usb
     {
         wdt_enable(WDTO_1S);
         usbInit();
-
         usbDeviceDisconnect();
-        for (Byte i = 0; i < 250; i++)
-        {
-            wdt_reset();
-            _delay_ms(2);
-        }
 
+        wdt_reset();
+        _delay_ms(500);
         usbDeviceConnect();
         sei();
     }
@@ -141,13 +137,9 @@ namespace usb
         usbPoll();
     }
 
-    void WaitForReady()
+    void WaitForReadiness()
     {
-        while (!usbInterruptIsReady())
-        {
-            Update();
-            _delay_ms(5);
-        }
+        while (!usbInterruptIsReady()) Update();
     }
 
     void SendKeyboardReport()
