@@ -67,6 +67,7 @@ namespace memtype
 		if (libusb_control_transfer(dev, 0xA0, 0x01, 0x0300 | reportId, 0, msg, *len, 5000) != *len)
 		{
 			printf("Error USB HID get report\n");
+			ret = ret_t::Error;
 		}
 
 		/* Active wait to let memtype do his stuff */
