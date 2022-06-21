@@ -2,9 +2,15 @@
 
 namespace usb
 {
+    enum
+    {
+        REPORT_KEYBOARD = 1,
+        REPORT_CUSTOM   = 2,
+    };
+
     struct KeyboardReport
     {
-        // uint8_t reportId;
+        uint8_t reportId;
         uint8_t modifier;
         uint8_t keycode;
     };
@@ -14,6 +20,7 @@ namespace usb
         uint8_t data[8];
     };
 
+    uint8_t reportId;
     uint8_t idleRate  = 500 / 4; // see HID1_11.pdf sect 7.2.4
     uint8_t protocolVersion = 0; // see HID1_11.pdf sect 7.2.6
 
@@ -31,7 +38,7 @@ PROGMEM const char usbHidReportDescriptor[USB_CFG_HID_REPORT_DESCRIPTOR_LENGTH] 
     0x05, 0x01,        // Usage Page (Generic Desktop Ctrls)
     0x09, 0x06,        // Usage (Keyboard)
     0xA1, 0x01,        // Collection (Application)
-//    0x85, 0x01,        //   Report ID (1)
+    0x85, 0x01,        //   Report ID (1)
     0x75, 0x01,        //   Report Size (1)
     0x95, 0x08,        //   Report Count (8)
     0x05, 0x07,        //   Usage Page (Kbrd/Keypad)
@@ -58,74 +65,53 @@ PROGMEM const char usbHidReportDescriptor[USB_CFG_HID_REPORT_DESCRIPTOR_LENGTH] 
     0x95, 0x01,        //   Report Count (1)
     0x91, 0x03,        //   Output (Const,Var,Abs,No Wrap,Linear,Preferred State,No Null Position,Non-volatile)
     0xC0,              // End Collection
-    // 0x06, 0x00, 0xFF,  // Usage Page (Vendor Defined 0xFF00)
-    // 0x09, 0x01,        // Usage (0x01)
-    // 0xA1, 0x01,        // Collection (Application)
-    // 0x85, 0x02,        //   Report ID (2)
-    // 0x75, 0x08,        //   Report Size (8)
-    // 0x95, 0x08,        //   Report Count (8)
-    // 0x09, 0x00,        //   Usage (0x00)
-    // 0x15, 0x00,        //   Logical Minimum (0)
-    // 0x26, 0xFF, 0x00,  //   Logical Maximum (255)
-    // 0xB2, 0x02, 0x01,  //   Feature (Data,Var,Abs,No Wrap,Linear,Preferred State,No Null Position,Non-volatile,Buffered Bytes)
-    // 0xC0,              // End Collection
+    0x06, 0x00, 0xFF,  // Usage Page (Vendor Defined 0xFF00)
+    0x09, 0x01,        // Usage (0x01)
+    0xA1, 0x01,        // Collection (Application)
+    0x85, 0x02,        //   Report ID (2)
+    0x75, 0x08,        //   Report Size (8)
+    0x95, 0x08,        //   Report Count (8)
+    0x15, 0x00,        //   Logical Minimum (0)
+    0x26, 0xFF, 0x00,  //   Logical Maximum (255)
+    0x09, 0x00,        //   Usage (0x00)
+    0xB2, 0x02, 0x01,  //   Feature (Data,Var,Abs,No Wrap,Linear,Preferred State,No Null Position,Non-volatile,Buffered Bytes)
+    0xC0,              // End Collection
 };
 
 usbMsgLen_t usbFunctionSetup(uint8_t data[8])
 {
     usbRequest_t *rq = (usbRequest_t *)data;
+    usb::reportId = rq->wValue.bytes[0];
 
     if ((rq->bmRequestType & USBRQ_TYPE_MASK) == USBRQ_TYPE_CLASS)
     {
         switch (rq->bRequest)
         {
         case USBRQ_HID_GET_REPORT:
-            // if (rq->wValue.bytes[0] == 0x01)
+            if (usb::reportId == usb::REPORT_KEYBOARD)
             {
-                // send "no keys pressed" if asked here
                 usbMsgPtr = (usbMsgPtr_t)&usb::keyboardReport;
-                usb::keyboardReport.modifier = 0;
-                usb::keyboardReport.keycode  = 0;
                 return sizeof(usb::keyboardReport);
             }
-            // else if (rq->wValue.bytes[0] == 0x02)
-            // {
-            //     // TODO: send data to host
-            //     usbMsgPtr = (usbMsgPtr_t)&usb::customReport;
-            //     return sizeof(usb::customReport);
-            // }
             break;
 
         case USBRQ_HID_SET_REPORT:
-            // if (rq->wValue.bytes[0] == 0x01 && rq->wLength.word == 1)
-            // {
-            //     // if wLength == 1, should be LED state
-            //     return USB_NO_MSG;
-            // }
-            // else if (rq->wValue.bytes[0] == 0x02)
-            // {
-            //     // call usbFunctionWrite() to read data from host
-            //     return USB_NO_MSG;
-            // }
-            if (rq->wLength.word == 1)
+            if (usb::reportId == usb::REPORT_KEYBOARD)
             {
-                // if wLength == 1, should be LED state
                 return USB_NO_MSG;
             }
             break;
 
         case USBRQ_HID_GET_IDLE:
-            // send idle rate to PC as required by spec
             usbMsgPtr = (usbMsgPtr_t)&usb::idleRate;
             return 1;
 
         case USBRQ_HID_SET_IDLE:
-            // save idle rate from PC as required by spec
             usb::idleRate = rq->wValue.bytes[1];
             break;
 
         case USBRQ_HID_GET_PROTOCOL:
-            usbMsgPtr =  (usbMsgPtr_t)&usb::protocolVersion;
+            usbMsgPtr = (usbMsgPtr_t)&usb::protocolVersion;
             return 1;
 
         case USBRQ_HID_SET_PROTOCOL:
@@ -133,29 +119,48 @@ usbMsgLen_t usbFunctionSetup(uint8_t data[8])
             break;
         }
     }
-
-    // by default don't return any data
     return 0;
 }
 
 usbMsgLen_t usbFunctionWrite(uint8_t *data, uint8_t len)
 {
-    if (usb::keyboardLedsState != data[0])
+    if (usb::reportId == usb::REPORT_KEYBOARD)
     {
-        if (usb::keyboardLedsState != 0xFF)
+        // if (data[1])
+        //     led::SwitchOn();
+        // else
+        //     led::SwitchOff();
+
+        if (usb::keyboardLedsState != data[1])
         {
-            usb::keyboardLedsChange = (usb::keyboardLedsState ^ data[0]);
+            if (usb::keyboardLedsState != 0xFF)
+            {
+                usb::keyboardLedsChange = (usb::keyboardLedsState ^ data[1]);
+            }
+            usb::keyboardLedsState = data[1];
         }
-        usb::keyboardLedsState = data[0];
     }
-    return 1; // Data read, not expecting more
+    else if (usb::reportId == usb::REPORT_CUSTOM)
+    {
+        // TODO
+    }
+    return 1;
+}
+
+usbMsgLen_t usbFunctionRead(uint8_t *data, uint8_t len)
+{
+    if (usb::reportId == usb::REPORT_CUSTOM)
+    {
+        // TODO
+    }
+    return 0;
 }
 
 namespace usb
 {
     void Init()
     {
-        // keyboardReport.reportId = 0x01;
+        keyboardReport.reportId = REPORT_KEYBOARD;
         keyboardLedsState  = 0xFF;
         keyboardLedsChange = 0x00;
 
@@ -164,7 +169,7 @@ namespace usb
         usbDeviceDisconnect();
 
         wdt_reset();
-        _delay_ms(500);
+        _delay_ms(250);
         usbDeviceConnect();
         sei();
     }
@@ -183,10 +188,5 @@ namespace usb
     void SendKeyboardReport()
     {
         usbSetInterrupt((uint8_t*)&keyboardReport, sizeof(keyboardReport));
-    }
-
-    void SendCustomReport()
-    {
-        usbSetInterrupt((uint8_t*)&customReport, sizeof(customReport));
     }
 }

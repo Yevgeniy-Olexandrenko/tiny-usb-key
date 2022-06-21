@@ -30,15 +30,15 @@ namespace led
 
     void Update()
     {
-        if (switchTime)
-        {
-            uint32_t nowTime = millis();
-            if (nowTime - switchTime >= 1000)
-            {
-                switchTime = nowTime;
-                isLedOn = !isLedOn;
-            }
-        }
+        // if (switchTime)
+        // {
+        //     uint32_t nowTime = millis();
+        //     if (nowTime - switchTime >= 1000)
+        //     {
+        //         switchTime = nowTime;
+        //         isLedOn = !isLedOn;
+        //     }
+        // }
 
         digitalWrite(1, isLedOn ? HIGH : LOW);
     }

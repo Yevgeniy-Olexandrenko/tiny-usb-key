@@ -18,10 +18,10 @@ class __FlashStringHelper;
 #define F(string_literal) (FPSTR(PSTR(string_literal)))
 
 // hardware level
+#include "LedControl.h"
 #include "USBProtocol.h"
 #include "HIDDefines.h"
 #include "HIDKeyboard.h"
-#include "LedControl.h"
 #include "MCUFlash.h"
 
 // software level
