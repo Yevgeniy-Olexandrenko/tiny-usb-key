@@ -36,14 +36,16 @@ namespace main
 
     enum {
         STATE_TURNED_OFF,
-        STATE_DISPLAY_FIRMWARE,
+        STATE_TURNING_ON,
         STATE_ENTER_PIN_CODE,
-        STATE_PIN_CODE_INVALID,
-        STATE_CHOOSE_CREDENTIAL
+        STATE_CHECK_PIN_CODE,
+        STATE_CHOOSE_CREDENTIAL,
+        STATE_BLOCKED
     } state;
 
     char enteredPinCode[5];
     uint8_t pinCodeDigitIndex;
+    uint8_t pinCodeEnterTries = 3;
 
     ////////////////////////////////////////////////////////////////////////////////
     // Pin code input
@@ -56,7 +58,7 @@ namespace main
 
     void PrintPinCode()
     {
-        output::PrintMessage(F("PIN: "));
+        output::PrintMessage(F("Pin: "));
         output::PrintText(enteredPinCode);
     }
 
@@ -95,12 +97,11 @@ namespace main
     // Go to next state
     ////////////////////////////////////////////////////////////////////////////////
 
-    void GoToStateDisplayFirmware()
+    void GoToStateTurningOn()
     {
-        state = STATE_DISPLAY_FIRMWARE;
+        state = STATE_TURNING_ON;
         input::AllowSubmission(true);
         output::PrintMessage(FPSTR(msgFirmware));
-        led::SwitchBlinking();
     }
 
     void GoToStateEnterPinCode()
@@ -110,10 +111,25 @@ namespace main
         GoToNextPinCodeDigitIndex();
     }
 
-    void GoToStatePinCodeInvalid()
+    void GoToStateCheckPinCode()
     {
-        state = STATE_PIN_CODE_INVALID;
-        output::PrintMessage(F("PIN: INVALID"));
+        if (IsPinCodeValid())
+        {
+            state = STATE_CHECK_PIN_CODE;
+            output::PrintMessage(F("Access: ALLOWED"));
+            led::SwitchOn();
+        }
+        else if (--pinCodeEnterTries)
+        {
+            state = STATE_CHECK_PIN_CODE;
+            output::PrintMessage(F("Access: DENIED"));
+        }
+        else
+        {
+            state = STATE_BLOCKED;
+            output::PrintMessage(F("Access: BLOCKED"));
+            led::SwitchBlinking();
+        }
     }
 
     void GoToStateChooseCredential()
@@ -121,7 +137,6 @@ namespace main
         state = STATE_CHOOSE_CREDENTIAL;
         input::AllowSubmission(true);
         PrintCredential();
-        led::SwitchOn();
     }
 
     ////////////////////////////////////////////////////////////////////////////////
@@ -132,11 +147,11 @@ namespace main
     {
         if (action == input::ACTION_NEXT)
         {
-            GoToStateDisplayFirmware();
+            GoToStateTurningOn();
         }
     }
 
-    void UpdateStateDisplayFirmware(input::Action action)
+    void UpdateStateTurningOn(input::Action action)
     {
         if (action == input::ACTION_NEXT || action == input::ACTION_SUBMIT)
         {
@@ -154,22 +169,20 @@ namespace main
         if (action == input::ACTION_SUBMIT)
         {
             if (pinCodeDigitIndex == 3)
-            {
-                if (IsPinCodeValid())
-                    GoToStateChooseCredential();
-                else
-                    GoToStatePinCodeInvalid();
-            }
+                GoToStateCheckPinCode();
             else
                 GoToNextPinCodeDigitIndex();
         }
     }
 
-    void UpdateStatePinCodeInvalid(input::Action action)
+    void UpdateStateCheckPinCode(input::Action action)
     {
         if (action == input::ACTION_NEXT)
         {
-            GoToStateEnterPinCode();
+            if (IsPinCodeValid())
+                GoToStateChooseCredential();
+            else
+                GoToStateEnterPinCode();
         }
     }
 
@@ -194,7 +207,6 @@ namespace main
         led::Init();
         input::Init();
         state = STATE_TURNED_OFF;
-        //GoToStateDisplayFirmware();
     }
 
     void Update()
@@ -209,9 +221,9 @@ namespace main
         switch (state)
         {
             case STATE_TURNED_OFF: UpdateStateTurnedOff(action); break;
-            case STATE_DISPLAY_FIRMWARE:UpdateStateDisplayFirmware(action); break;
+            case STATE_TURNING_ON: UpdateStateTurningOn(action); break;
             case STATE_ENTER_PIN_CODE: UpdateStateEnterPinCode(action); break;
-            case STATE_PIN_CODE_INVALID: UpdateStatePinCodeInvalid(action); break;
+            case STATE_CHECK_PIN_CODE: UpdateStateCheckPinCode(action); break;
             case STATE_CHOOSE_CREDENTIAL: UpdateStateChooseCredential(action); break;
         }
     }
