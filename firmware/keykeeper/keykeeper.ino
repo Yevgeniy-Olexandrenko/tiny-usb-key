@@ -1,6 +1,3 @@
-
-#pragma once
-
 #include "keykeeper.h"
 #include "src/MainLoop.h"
 
